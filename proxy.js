@@ -72,15 +72,7 @@ net.createServer(function (client) {
         server.on("connect", function (socket) {
             client.resume();
             server.resume();
-
-            if (req.method == 'CONNECT') {
-                if (localflag) {
-                    server.write(buffer);
-                    client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
-                }
-            } else {
-                server.write(buffer);
-            }
+            server.write(buffer);
         });
     }
 }).listen(local_port);
