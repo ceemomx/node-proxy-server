@@ -1,9 +1,9 @@
 var net = require('net');
 var local_port = 6080;
 
-//在本地创建一个server监听本地local_port端口 
+//在本地创建一个server监听本地local_port端口
 net.createServer(function (client) {
-
+    console.log('client:',client);
     //首先监听浏览器的数据发送事件，直到收到的数据包含完整的http请求头
     var buffer = new Buffer(0);
     client.on('data', function (data) {
