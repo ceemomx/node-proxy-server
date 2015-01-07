@@ -54,6 +54,7 @@ net.createServer(function (client) {
         server.on("data", function (data) {
             if (!client.closeflag) {
                 // encrypt for local, decrypt for proxy
+
                 client.write(data);
             }
         });
@@ -69,7 +70,6 @@ net.createServer(function (client) {
         server.on("connect", function (socket) {
             client.resume();
             server.resume();
-            server.write(buffer);
         });
     }
 }).listen(local_port);
