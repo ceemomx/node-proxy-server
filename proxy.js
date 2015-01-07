@@ -58,10 +58,6 @@ net.createServer(function (client) {
         server.on("data", function (data) {
             if (!client.closeflag) {
                 // encrypt for local, decrypt for proxy
-                for (var i = 0; i < data.length; i++) {
-                    data[i] += localflag ? 1 : -1;
-                }
-
                 client.write(data);
             }
         });
