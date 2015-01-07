@@ -44,13 +44,17 @@ net.createServer(function (client) {
             client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
         }
         else{
+            console.log('start write header buffer');
             server.write(buffer);
+            console.log('end write header buffer');
         }
         //交换服务器与浏览器的数据
         client.on("data", function (data) {
+            console.log('get client data');
             server.write(data);
         });
         server.on("data", function (data) {
+            console.log('get server data');
             client.write(data);
         });
 
