@@ -43,31 +43,46 @@ net.createServer(function (client) {
 
         //建立到目标服务器的连接
         var server = net.createConnection(req.port, req.host);
-        if (req.method == 'CONNECT') {
-            client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
-        } else {
-            server.write(buffer);
-        }
 
+
+        client.pause();
+
+        //交换服务器与浏览器的数据
         client.on("data", function (data) {
-            server.write(data);
+            if (!server.closeflag) {
+                server.write(data);
+            }
         });
+        server.pause();
+
         server.on("data", function (data) {
-            client.write(data);
+            if (!client.closeflag) {
+                // encrypt for local, decrypt for proxy
+                for (var i = 0; i < data.length; i++) {
+                    data[i] += localflag ? 1 : -1;
+                }
+
+                client.write(data);
+            }
         });
 
-//        client.on("end", function () {
-//            client.closeflag = 1
-//        });
-//
-//        server.on("end", function () {
-//            server.closeflag = 1
-//        });
+        client.on("end", function () {
+            client.closeflag = 1
+        });
 
-//        server.on("connect", function (socket) {
-//            client.resume();
-//            server.resume();
-//        });
+        server.on("end", function () {
+            server.closeflag = 1
+        });
+
+        server.on("connect", function (socket) {
+            client.resume();
+            server.resume();
+            if (req.method == 'CONNECT') {
+                client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
+            } else {
+                server.write(buffer);
+            }
+        });
     }
 }).listen(local_port);
 
