@@ -25,7 +25,6 @@ net.createServer(function (client) {
             var _body_pos = buffer_find_body(buffer);
             if (_body_pos < 0)  _body_pos = buffer.length;
             var header = buffer.slice(0, _body_pos).toString('utf8');
-            console.log('header:'+header);
             //替换connection头
             header = header.replace(/(proxy\-)?connection\:.+\r\n/ig, '')
                 .replace(/Keep\-Alive\:.+\r\n/i, '')
@@ -40,7 +39,7 @@ net.createServer(function (client) {
 
         //建立到目标服务器的连接
         var server = net.createConnection(req.port, req.host);
-
+        console.log('start creating connection:',req);
         if (req.method == 'CONNECT'){
             client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
         }
