@@ -68,7 +68,10 @@ net.createServer(function (client) {
         server.on("end", function () {
             server.closeflag = 1
         });
-
+        client.on("connect", function(s){
+            client.resume();
+            server.resume();
+        });
         server.on("connect", function (socket) {
             client.resume();
             server.resume();
