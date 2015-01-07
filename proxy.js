@@ -1,5 +1,5 @@
 var net = require('net');
-var serverip = "127.0.0.1";
+var serverip = "104.131.149.6";
 var local_port = 6080;
 var localflag = 0;
 
