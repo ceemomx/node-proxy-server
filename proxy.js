@@ -108,8 +108,8 @@ function parse_request(buffer) {
             var host = s.match(/Host\:\s+([^\n\s\r]+)/)[ 1 ];
             if (host) {
                 var _p = host.split(':', 2);
-                console.log('hostInfo: ',_p);
-                return   {   method: arr [ 1 ], host: _p [ 0 ], port: _p [ 1 ] ? _p [ 1 ] : 443, path: arr [ 2 ], httpVersion: arr [ 3 ]   };
+
+                return   {   method: arr [ 1 ], host: _p [ 0 ], port: _p [ 1 ] ? _p [ 1 ] : 80, path: arr [ 2 ], httpVersion: arr [ 3 ]   };
             }
         }
     }
