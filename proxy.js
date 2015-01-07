@@ -25,9 +25,9 @@ net.createServer(function (client) {
             if (_body_pos < 0)  _body_pos = buffer.length;
             var header = buffer.slice(0, _body_pos).toString('utf8');
             //替换connection头
-            header = header.replace(/(proxy\-)?connection\:.+\r\n/ig, '')
-                .replace(/Keep\-Alive\:.+\r\n/i, '')
-                .replace("\r\n", '\r\nConnection: close\r\n');
+            header = header.replace(/(proxy\-)?connection\:.+\r\n/ig, '');
+//                .replace(/Keep\-Alive\:.+\r\n/i, '')
+//                .replace("\r\n", '\r\nConnection: close\r\n');
             //替换网址格式(去掉域名部分)
             if (req.httpVersion == '1.1') {
                 var url = req.path.replace(/http\:\/\/[^\/]+/, '');
