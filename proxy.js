@@ -3,7 +3,6 @@ var local_port = 6080;
 
 //在本地创建一个server监听本地local_port端口
 net.createServer(function (client) {
-    console.log('client:',client);
     //首先监听浏览器的数据发送事件，直到收到的数据包含完整的http请求头
     var buffer = new Buffer(0);
     client.on('data', function (data) {
@@ -39,22 +38,18 @@ net.createServer(function (client) {
 
         //建立到目标服务器的连接
         var server = net.createConnection(req.port, req.host);
-        console.log('start creating connection:',req);
         if (req.method == 'CONNECT'){
             client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
         }
         else{
-            console.log('start write header buffer');
             server.write(buffer);
-            console.log('end write header buffer');
         }
         //交换服务器与浏览器的数据
         client.on("data", function (data) {
-            console.log('get client data');
+            console.log('client data:',data);
             server.write(data);
         });
         server.on("data", function (data) {
-            console.log('get server data');
             client.write(data);
         });
 
