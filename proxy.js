@@ -18,7 +18,6 @@ net.createServer(function (client) {
     //从http请求头部取得请求信息后，继续监听浏览器发送数据，同时连接目标服务器，并把目标服务器的数据传给浏览器
     function relay_connection(req, buffer) {
         console.log(req.method + ' ' + req.host + ':' + req.port);
-        console.log(req);
         //如果请求不是CONNECT方法（GET, POST），那么替换掉头部的一些东西
         if (req.method != 'CONNECT') {
             //先从buffer中取出头部
@@ -109,7 +108,8 @@ function parse_request(buffer) {
             var host = s.match(/Host\:\s+([^\n\s\r]+)/)[ 1 ];
             if (host) {
                 var _p = host.split(':', 2);
-                return   {   method: arr [ 1 ], host: _p [ 0 ], port: _p [ 1 ] ? _p [ 1 ] : 80, path: arr [ 2 ], httpVersion: arr [ 3 ]   };
+                console.log('hostInfo: ',_p);
+                return   {   method: arr [ 1 ], host: _p [ 0 ], port: _p [ 1 ] ? _p [ 1 ] : 443, path: arr [ 2 ], httpVersion: arr [ 3 ]   };
             }
         }
     }
