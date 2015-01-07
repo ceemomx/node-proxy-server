@@ -12,11 +12,11 @@ net.createServer(function (client) {
         var req = parse_request(buffer);
         if (req === false)  return;
         client.removeAllListeners('data');
-        relay_connection(req);
+        relay_connection(req, buffer);
     });
 
     //从http请求头部取得请求信息后，继续监听浏览器发送数据，同时连接目标服务器，并把目标服务器的数据传给浏览器
-    function relay_connection(req) {
+    function relay_connection(req, buffer) {
         console.log(req.method + ' ' + req.host + ':' + req.port);
 
         //如果请求不是CONNECT方法（GET, POST），那么替换掉头部的一些东西
@@ -37,40 +37,37 @@ net.createServer(function (client) {
             buffer = buffer_add(new Buffer(header, 'utf8'), buffer.slice(_body_pos));
         }
 
-        client.pause();
 
         //交换服务器与浏览器的数据
-        client.on("data", function (data) {
-            if (!server.closeflag) {
-                server.write(data);
-            }
-        });
+
 
         //建立到目标服务器的连接
         var server = net.createConnection(req.port, req.host);
+        if (req.method == 'CONNECT') {
+            client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
+        } else {
+            server.write(buffer);
+        }
 
-        server.pause();
-
+        client.on("data", function (data) {
+            server.write(data);
+        });
         server.on("data", function (data) {
-            if (!client.closeflag) {
-                // encrypt for local, decrypt for proxy
-
-                client.write(data);
-            }
+            client.write(data);
         });
 
-        client.on("end", function () {
-            client.closeflag = 1
-        });
+//        client.on("end", function () {
+//            client.closeflag = 1
+//        });
+//
+//        server.on("end", function () {
+//            server.closeflag = 1
+//        });
 
-        server.on("end", function () {
-            server.closeflag = 1
-        });
-
-        server.on("connect", function (socket) {
-            client.resume();
-            server.resume();
-        });
+//        server.on("connect", function (socket) {
+//            client.resume();
+//            server.resume();
+//        });
     }
 }).listen(local_port);
 
