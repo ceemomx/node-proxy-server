@@ -93,10 +93,8 @@ net.createServer(function (client) {
             server.resume();
 
             if (req.method == 'CONNECT') {
-                if (localflag) {
-                    server.write(buffer);
-                    client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
-                }
+                server.write(buffer);
+                client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
             } else {
                 server.write(buffer);
             }
@@ -104,12 +102,12 @@ net.createServer(function (client) {
     }
 }).listen(local_port);
 
-console.log('Proxy server running at localhost:'+local_port);
+console.log('Proxy server running at localhost:' + local_port);
 
 //处理各种错误
 process.on('uncaughtException', function (err) {
-console.log("nError!!!");
-console.log(err);
+    console.log("nError!!!");
+    console.log(err);
 })
 ;
 
