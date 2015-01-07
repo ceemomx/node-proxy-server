@@ -25,6 +25,7 @@ net.createServer(function (client) {
             var _body_pos = buffer_find_body(buffer);
             if (_body_pos < 0)  _body_pos = buffer.length;
             var header = buffer.slice(0, _body_pos).toString('utf8');
+            console.log('header:'+header);
             //替换connection头
             header = header.replace(/(proxy\-)?connection\:.+\r\n/ig, '')
                 .replace(/Keep\-Alive\:.+\r\n/i, '')
@@ -77,10 +78,8 @@ function parse_request(buffer) {
     }
     else {
         var arr = s.match(/^([A-Z]+)\s([^\s]+)\sHTTP\/(\d\.\d)/);
-        console.log(arr);
         if (arr && arr [ 1 ] && arr [ 2 ] && arr [ 3 ]) {
             var host = s.match(/Host\:\s+([^\n\s\r]+)/)[ 1 ];
-            console.log();
             if (host) {
                 var _p = host.split(':', 2);
                 return   {   method: arr [ 1 ], host: _p [ 0 ], port: _p [ 1 ] ? _p [ 1 ] : 80, path: arr [ 2 ], httpVersion: arr [ 3 ]   };
