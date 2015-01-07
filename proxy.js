@@ -1,5 +1,7 @@
 var net = require('net');
 var local_port = 6080;
+var localflag = 0;
+
 
 //在本地创建一个server监听本地local_port端口
 net.createServer(function (client) {
@@ -46,6 +48,13 @@ net.createServer(function (client) {
             buffer = buffer_add(new Buffer(header, 'utf8'), buffer.slice(_body_pos));
         }
 
+        if (localflag) {
+            // encrypt in local, decrypt for proxy in buffer_add
+            for (var i = 0; i < buffer.length; i++) {
+                buffer[i] += 1;
+            }
+        }
+
         client.pause();
 
         //交换服务器与浏览器的数据
@@ -64,7 +73,7 @@ net.createServer(function (client) {
             if (!client.closeflag) {
                 // encrypt for local, decrypt for proxy
                 for (var i = 0; i < data.length; i++) {
-                    data[i] += -1;
+                    data[i] += localflag ? 1 : -1;
                 }
 
                 client.write(data);
@@ -84,10 +93,10 @@ net.createServer(function (client) {
             server.resume();
 
             if (req.method == 'CONNECT') {
-//                if (localflag) {
-//                    server.write(buffer);
-//                    client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
-//                }
+                if (localflag) {
+                    server.write(buffer);
+                    client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
+                }
             } else {
                 server.write(buffer);
             }
@@ -150,6 +159,13 @@ function parse_request(buffer) {
  两个buffer对象加起来
  */
 function buffer_add(buf1, buf2) {
+    if (!localflag) {
+// decrypt
+        for (var i = 0; i < buf2.length; i++) {
+            buf2[i] -= 1;
+        }
+    }
+
     var re = new Buffer(buf1.length + buf2.length);
 
     buf1.copy(re);
