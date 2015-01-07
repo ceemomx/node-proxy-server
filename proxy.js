@@ -39,6 +39,13 @@ net.createServer(function (client) {
 
         //建立到目标服务器的连接
         var server = net.createConnection(req.port, req.host);
+        
+        if (req.method == 'CONNECT'){
+            client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
+        }
+        else{
+            server.write(buffer);
+        }
         //交换服务器与浏览器的数据
         client.on("data", function (data) {
             server.write(data);
@@ -47,20 +54,17 @@ net.createServer(function (client) {
             client.write(data);
         });
 
-        if (req.method == 'CONNECT')
-            client.write(new Buffer("HTTP/1.1 200 Connection established\r\nConnection: close\r\n\r\n"));
-        else
-            server.write(buffer);
+
     }
 }).listen(local_port);
 
 console.log('Proxy server running at localhost:' + local_port);
 
-//处理各种错误 
-//process.on('uncaughtException', function (err) {
-//    console.log("\nError!!!!");
-//    console.log(err);
-//});
+处理各种错误
+process.on('uncaughtException', function (err) {
+    console.log("\nError!!!!");
+    console.log(err);
+});
 
 
 function parse_request(buffer) {
